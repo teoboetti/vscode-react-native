@@ -1,7 +1,7 @@
 {
     "name": "vscode-react-native",
-    "displayName": "React Native Tools",
-    "version": "1.14.2",
+    "displayName": "React Native Tools (patched)",
+    "version": "1.14.20260928",
     "private": true,
     "publisher": "msjsdiag",
     "icon": "resources/images/icon.png",
@@ -1394,7 +1394,7 @@
     },
     "scripts": {
         "build": "gulp build",
-        "install-local": "vsce package && codium --install-extension vscode-react-native-$npm_package_version.vsix",
+        "install-local": "npm version 1.14.$(date +%Y%m%d) --no-git-tag-version --allow-same-version && vsce package -o vscode-react-native-local.vsix && codium --install-extension vscode-react-native-local.vsix",
         "lint": "gulp lint",
         "format": "gulp format",
         "vscode:prepublish": "gulp",
