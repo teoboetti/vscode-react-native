@@ -1,7 +1,7 @@
 {
     "name": "vscode-react-native",
     "displayName": "React Native Tools",
-    "version": "1.14.1",
+    "version": "1.14.2",
     "private": true,
     "publisher": "msjsdiag",
     "icon": "resources/images/icon.png",
@@ -1394,6 +1394,7 @@
     },
     "scripts": {
         "build": "gulp build",
+        "install-local": "vsce package && codium --install-extension vscode-react-native-$npm_package_version.vsix",
         "lint": "gulp lint",
         "format": "gulp format",
         "vscode:prepublish": "gulp",
