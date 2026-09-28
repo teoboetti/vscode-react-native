@@ -21,6 +21,49 @@ You can not only download React Native Tools in the marketplace, but can also pa
 
 Building and testing React Native Tools from source requires Node.js 22 or later. This development requirement does not affect the runtime requirements of the installed extension.
 
+## Install in VSCodium
+
+VSCodium installs extensions from [Open VSX](https://open-vsx.org/), which does not carry this fork, so install the packaged `.vsix` directly.
+
+### From a release
+
+A `v*` tag builds the extension in CI and attaches the `.vsix` to the release, so no local toolchain is needed:
+
+```bash
+gh release download --repo teoboetti/vscode-react-native --pattern '*.vsix'
+codium --install-extension vscode-react-native-*.vsix
+```
+
+Omitting the tag takes the latest release; pass one (for example `v1.14.20260928`) to install a specific build.
+
+### From source
+
+```bash
+git clone https://github.com/teoboetti/vscode-react-native.git
+cd vscode-react-native
+npm install
+npm run install-local
+```
+
+`npm run install-local` stamps the version with the build date, packages the extension and installs it into VSCodium in one step.
+
+Reload the window afterwards (**Developer: Reload Window**) for VSCodium to pick up the new build.
+
+If `codium` is not on your `PATH`, run **Shell Command: Install 'codium' command in PATH** from the Command Palette, or install the `.vsix` through **Extensions: Install from VSIX...**.
+
+### Telling it apart from the published extension
+
+Local builds are named **React Native Tools (patched)** and versioned `1.14.<YYYYMMDD>`, so they are recognisable in the extensions list and always sort above a published `1.14.x`.
+
+They keep upstream's `msjsdiag.vscode-react-native` identifier, so VSCodium may still try to replace one with a marketplace build. Right-click the extension and choose **Disable Auto Update** to prevent that.
+
+To pick up upstream changes and rebuild:
+
+```bash
+git fetch upstream && git rebase upstream/master
+npm run install-local
+```
+
 ## About the extension
 
 This VS Code extension provides a development environment for React Native and Expo projects.
@@ -34,6 +77,7 @@ Using this extension, you can **debug your code and quickly run `react-native` o
 
 - [React Native Tools Preview](#react-native-tools-preview)
 - [Package extension locally](#package-extension-locally)
+- [Install in VSCodium](#install-in-vscodium)
 - [About the extension](#about-the-extension)
 - [Getting started](#getting-started)
 - [React Native commands in the Command Palette](#react-native-commands-in-the-command-palette)
