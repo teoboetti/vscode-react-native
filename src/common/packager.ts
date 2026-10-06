@@ -273,13 +273,16 @@ export class Packager {
             );
 
             let packagerSpawnResult;
-            if (this.runOptions?.platform != "exponent" && this.runOptions?.platform != "expoweb") {
+            if (
+                this.runOptions?.platform !== "exponent" &&
+                this.runOptions?.platform !== "expoweb"
+            ) {
                 packagerSpawnResult = new CommandExecutor(
                     nodeModulesRoot,
                     this.projectPath,
                     this.logger,
                 ).spawnReactPackager(args, spawnOptions);
-            } else if (this.runOptions?.platform == "exponent") {
+            } else if (this.runOptions?.platform === "exponent") {
                 this.runOptions?.expoPlatformType &&
                     args.push(`--${this.runOptions?.expoPlatformType?.toLowerCase()}`);
                 logger.log(

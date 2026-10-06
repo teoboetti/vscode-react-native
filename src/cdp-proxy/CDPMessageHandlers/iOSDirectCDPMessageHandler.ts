@@ -39,7 +39,8 @@ export class IOSDirectCDPMessageHandler extends BaseCDPMessageHandler {
         };
     }
 
-    public processApplicationCDPMessage(event: any): ProcessedCDPMessage {
+    public processApplicationCDPMessage(initialEvent: any): ProcessedCDPMessage {
+        let event = initialEvent;
         if (event.method === CDP_API_NAMES.CONSOLE_MESSAGE_ADDED) {
             event = this.processDeprecatedConsoleMessage(event);
         }

@@ -101,7 +101,7 @@ export class ReactNativeProjectHelper {
         return hermesEnabled;
     }
 
-    public static async UpdateMertoBundlerForExpoWeb(launchArgs: any) {
+    public static async UpdateMertoBundlerForExpoWeb(launchArgs: any): Promise<void> {
         const appJsonPath = path.join(launchArgs.cwd, "app.json");
         const fs = new FileSystem();
         const appJson = await fs.readFile(appJsonPath).then(content => {
@@ -114,7 +114,7 @@ export class ReactNativeProjectHelper {
         }
     }
 
-    public static async verifyMetroConfigFile(projectRoot: string) {
+    public static async verifyMetroConfigFile(projectRoot: string): Promise<void> {
         const logger = OutputChannelLogger.getChannel(OutputChannelLogger.MAIN_CHANNEL_NAME, true);
 
         let version;

@@ -3,7 +3,7 @@
 
 import { ChildProcess } from "./node/childProcess";
 
-export async function getNodeVersion(projectPath: string, env: object) {
+export async function getNodeVersion(projectPath: string, env: object): Promise<string> {
     try {
         return await new ChildProcess().execToString("node -v", { cwd: projectPath, env });
     } catch (error) {

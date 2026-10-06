@@ -15,8 +15,8 @@ export class runEasBuild extends ReactNativeCommand {
     error = ErrorHelper.getInternalError(InternalErrorCode.FailedToRunEasBuild);
     async baseFn(): Promise<void> {
         assert(this.project);
-        const packager = await this.project.getPackager();
-        const projectRootPath = await packager.getProjectPath();
+        const packager = this.project.getPackager();
+        const projectRootPath = packager.getProjectPath();
 
         if (!projectRootPath) {
             void vscode.window.showErrorMessage(

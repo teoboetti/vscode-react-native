@@ -36,7 +36,8 @@ export class HermesCDPMessageHandler extends BaseCDPMessageHandler {
     private isFirstRun: boolean = true;
     private reloadTimer: NodeJS.Timeout | null = null;
 
-    public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
+    public processDebuggerCDPMessage(initialEvent: any): ProcessedCDPMessage {
+        let event = initialEvent;
         let sendBack = false;
         if (event.method === CDP_API_NAMES.CLOSE) {
             this.cancelFirstRunReload();
@@ -60,7 +61,8 @@ export class HermesCDPMessageHandler extends BaseCDPMessageHandler {
         };
     }
 
-    public processApplicationCDPMessage(event: any): ProcessedCDPMessage {
+    public processApplicationCDPMessage(initialEvent: any): ProcessedCDPMessage {
+        let event = initialEvent;
         const sendBack = false;
         if (event.method === CDP_API_NAMES.DEBUGGER_PAUSED) {
             event = this.handlePausedEvent(event);

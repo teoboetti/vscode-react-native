@@ -60,8 +60,9 @@ export class TelemetryHelper {
     public static addPlatformPropertiesToTelemetryProperties(
         args: IRunOptions,
         versions: RNPackageVersions,
-        properties: ICommandTelemetryProperties,
+        initialProperties: ICommandTelemetryProperties,
     ): any {
+        let properties = initialProperties;
         properties = TelemetryHelper.addPropertyToTelemetryProperties(
             versions.reactNativeVersion,
             "reactNativeVersion",
@@ -286,11 +287,11 @@ export class TelemetryHelper {
         propertyValue: any,
         isPii: boolean,
     ): void {
-        for (let i = 0; i < propertyValue.length; i++) {
+        for (const [i, value] of propertyValue.entries()) {
             TelemetryHelper.setTelemetryEventProperty(
                 event,
                 propertyName + String(i),
-                propertyValue[i],
+                value,
                 isPii,
             );
         }

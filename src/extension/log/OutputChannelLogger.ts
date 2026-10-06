@@ -78,7 +78,8 @@ export class OutputChannelLogger implements ILogger {
         }
     }
 
-    public log(message: string, level: LogLevel): void {
+    public log(initialMessage: string, level: LogLevel): void {
+        let message = initialMessage;
         if (LogHelper.LOG_LEVEL === LogLevel.None) {
             return;
         }
@@ -96,7 +97,8 @@ export class OutputChannelLogger implements ILogger {
         }
     }
 
-    public logWithCustomTag(tag: string, message: string, level: LogLevel): void {
+    public logWithCustomTag(tag: string, initialMessage: string, level: LogLevel): void {
+        let message = initialMessage;
         if (LogHelper.LOG_LEVEL === LogLevel.None) {
             return;
         }

@@ -198,7 +198,7 @@ export class IOSTargetManager extends MobileTargetManager {
             filter as ((el: IMobileTarget) => boolean) | undefined,
         )) as IDebuggableIOSTarget[];
         // If we select only from devices, we should not select system
-        if (!targets.find(target => target.isVirtualTarget)) {
+        if (!targets.some(target => target.isVirtualTarget)) {
             return IOSTargetManager.ANY_SYSTEM;
         }
         const names: Set<string> = new Set(targets.map(target => target.system));

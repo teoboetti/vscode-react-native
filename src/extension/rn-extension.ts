@@ -356,9 +356,9 @@ export async function onFolderAdded(folder: vscode.WorkspaceFolder): Promise<voi
     const workspacePath = vscode.workspace.workspaceFile?.fsPath;
     const excludeFolders = await SettingsHelper.getWorkspaceFileExcludeFolder(workspacePath);
     let isExclude = false;
-    if (excludeFolders.length != 0) {
-        for (let i = 0; i < excludeFolders.length; i++) {
-            if (folder.name == excludeFolders[i]) {
+    if (excludeFolders.length !== 0) {
+        for (const excludeFolder of excludeFolders) {
+            if (folder.name === excludeFolder) {
                 isExclude = true;
                 break;
             }

@@ -49,10 +49,10 @@ export class PromiseUtil {
     ): Promise<void> {
         const arraySources: T[] = sources instanceof Promise ? await sources : sources;
 
-        return arraySources.reduce(async (previousReduction: Promise<void>, newSource: T) => {
-            await previousReduction;
-            return generateAsyncOperation(newSource);
-        }, Promise.resolve());
+        for (const source of arraySources) {
+            // eslint-disable-next-line no-await-in-loop -- operations run sequentially by design
+            await generateAsyncOperation(source);
+        }
     }
 
     public static async delay(duration: number): Promise<void> {
@@ -66,7 +66,7 @@ export class PromiseUtil {
         interval: number = 1000,
         timeout?: number,
     ): Promise<T | null> {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             let rejectTimeout: NodeJS.Timeout | undefined;
             // eslint-disable-next-line prefer-const
             let сheckInterval: NodeJS.Timeout | undefined;
@@ -103,14 +103,14 @@ export class PromiseUtil {
                 }
             };
 
-            const resolved = await tryToResolve();
-            if (resolved) {
-                return;
-            }
-
-            сheckInterval = setInterval(async () => {
-                await tryToResolve();
-            }, interval);
+            void tryToResolve().then(resolved => {
+                if (resolved) {
+                    return;
+                }
+                сheckInterval = setInterval(async () => {
+                    await tryToResolve();
+                }, interval);
+            });
         });
     }
 

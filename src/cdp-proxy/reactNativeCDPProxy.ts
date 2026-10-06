@@ -112,17 +112,15 @@ export class ReactNativeCDPProxy {
         this.debuggerTarget.pause(); // don't listen for events until the target is ready
 
         if (!this.browserInspectUri) {
-            if (this.cancellationToken) {
-                this.browserInspectUri = await this.debuggerEndpointHelper.retryGetWSEndpoint(
-                    `http://localhost:${this.applicationTargetPort}`,
-                    90,
-                    this.cancellationToken,
-                );
-            } else {
-                this.browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(
-                    `http://localhost:${this.applicationTargetPort}`,
-                );
-            }
+            this.browserInspectUri = this.cancellationToken
+                ? await this.debuggerEndpointHelper.retryGetWSEndpoint(
+                      `http://localhost:${this.applicationTargetPort}`,
+                      90,
+                      this.cancellationToken,
+                  )
+                : await this.debuggerEndpointHelper.getWSEndpoint(
+                      `http://localhost:${this.applicationTargetPort}`,
+                  );
         }
 
         this.applicationTarget = new Connection(await this.createApplicationTransport());

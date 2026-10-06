@@ -74,11 +74,10 @@ export class InspectorConsoleView extends InspectorView {
     }
 
     private setupConsoleLogsColor(systemColorTheme: SystemColorTheme): void {
-        if (systemColorTheme === SystemColorTheme.Light) {
-            this.consoleLogsColor = this.consoleLogsColors.Blue;
-        } else {
-            this.consoleLogsColor = this.consoleLogsColors.Orange;
-        }
+        this.consoleLogsColor =
+            systemColorTheme === SystemColorTheme.Light
+                ? this.consoleLogsColors.Blue
+                : this.consoleLogsColors.Orange;
     }
 
     private handleRequest(data: Request): void {
@@ -169,13 +168,13 @@ export class InspectorConsoleView extends InspectorView {
 
         const response: Response = partialResponseEntry.initialResponse;
         const allChunks: string[] =
-            response.data != null
+            response.data !== null && response.data !== undefined
                 ? [
                       response.data,
                       ...Object.entries(partialResponseEntry.followupChunks)
                           // It's important to parseInt here or it sorts lexicographically
                           .sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10))
-                          .map(([_k, v]: [string, string]) => v),
+                          .map(([, v]: [string, string]) => v),
                   ]
                 : [];
         const data = combineBase64Chunks(allChunks);
@@ -236,10 +235,11 @@ export class InspectorConsoleView extends InspectorView {
     }
 
     private prepareHeadersViewObject(headers: Header[]): Record<string, string> {
-        return headers.reduce((headersViewObject, header) => {
+        const headersViewObject: Record<string, string> = {};
+        for (const header of headers) {
             headersViewObject[header.key] = header.value;
-            return headersViewObject;
-        }, {} as Record<string, string>);
+        }
+        return headersViewObject;
     }
 
     private printNetworkRequestData(networkRequestData: ConsoleNetworkRequestDataView): void {

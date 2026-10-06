@@ -83,7 +83,7 @@ suite("launchExpoWebCommand", function () {
         const command = launchExpoWeb.formInstance();
         (command as any).project = project;
 
-        await command.baseFn({});
+        await command.baseFn();
 
         assert.strictEqual(isExpoManagedAppStub.calledWithExactly(true), true);
         assert.strictEqual(getRunOptionsStub.called, false);
@@ -107,7 +107,7 @@ suite("launchExpoWebCommand", function () {
         const command = launchExpoWeb.formInstance();
         (command as any).project = project;
 
-        await command.baseFn({});
+        await command.baseFn();
 
         assert.strictEqual(isExpoManagedAppStub.calledWithExactly(true), true);
         assert.strictEqual(

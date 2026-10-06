@@ -41,7 +41,7 @@ class RunAsError extends Error {
  * @format
  */
 
-export function push(
+export async function push(
     adbHelper: AdbHelper,
     deviceId: string,
     app: string,
@@ -49,27 +49,22 @@ export function push(
     contents: string,
     logger?: OutputChannelLogger,
 ): Promise<void> {
-    return validateAppName(app).then(validApp =>
-        validateFilePath(filepath).then(validFilepath =>
-            validateFileContent(contents).then(validContent =>
-                _push(adbHelper, deviceId, validApp, validFilepath, validContent, logger),
-            ),
-        ),
-    );
+    const validApp = await validateAppName(app);
+    const validFilepath = await validateFilePath(filepath);
+    const validContent = await validateFileContent(contents);
+    return _push(adbHelper, deviceId, validApp, validFilepath, validContent, logger);
 }
 
-export function pull(
+export async function pull(
     adbHelper: AdbHelper,
     deviceId: string,
     app: string,
     path: string,
     logger?: OutputChannelLogger,
 ): Promise<string> {
-    return validateAppName(app).then(validApp =>
-        validateFilePath(path).then(validPath =>
-            _pull(adbHelper, deviceId, validApp, validPath, logger),
-        ),
-    );
+    const validApp = await validateAppName(app);
+    const validPath = await validateFilePath(path);
+    return _pull(adbHelper, deviceId, validApp, validPath, logger);
 }
 
 /**
@@ -152,7 +147,7 @@ function validateFileContent(content: string): Promise<string> {
     return Promise.reject(new Error(`Disallowed escaping file content: ${content}`));
 }
 
-function _push(
+async function _push(
     adbHelper: AdbHelper,
     deviceId: string,
     app: string,
@@ -161,25 +156,25 @@ function _push(
     logger?: OutputChannelLogger,
 ): Promise<void> {
     const command = `echo \\"${contents}\\" > "${filename}" && chmod 644 "${filename}"`;
-    return executeCommandAsApp(adbHelper, deviceId, app, command)
-        .then(res => {
-            logger?.debug(res);
-        })
-        .catch(error => {
-            if (error instanceof RunAsError) {
-                // Fall back to running the command directly. This will work if adb is running as root.
-                return executeCommandWithSu(adbHelper, deviceId, app, command)
-                    .then(() => undefined)
-                    .catch(e => {
-                        logger?.debug(e.toString());
-                        throw error;
-                    });
+    try {
+        const res = await executeCommandAsApp(adbHelper, deviceId, app, command);
+        logger?.debug(res);
+    } catch (error) {
+        if (error instanceof RunAsError) {
+            // Fall back to running the command directly. This will work if adb is running as root.
+            try {
+                await executeCommandWithSu(adbHelper, deviceId, app, command);
+                return;
+            } catch (e) {
+                logger?.debug(String(e));
+                throw error;
             }
-            throw error;
-        });
+        }
+        throw error;
+    }
 }
 
-function _pull(
+async function _pull(
     adbHelper: AdbHelper,
     deviceId: string,
     app: string,
@@ -187,17 +182,21 @@ function _pull(
     logger?: OutputChannelLogger,
 ): Promise<string> {
     const command = `cat "${path}"`;
-    return executeCommandAsApp(adbHelper, deviceId, app, command).catch(error => {
+    try {
+        return await executeCommandAsApp(adbHelper, deviceId, app, command);
+    } catch (error) {
         if (error instanceof RunAsError) {
             // Fall back to running the command directly. This will work if adb is running as root.
-            return executeCommandWithSu(adbHelper, deviceId, app, command).catch(e => {
+            try {
+                return await executeCommandWithSu(adbHelper, deviceId, app, command);
+            } catch (e) {
                 // Throw the original error.
-                logger?.debug(e.toString());
+                logger?.debug(String(e));
                 throw error;
-            });
+            }
         }
         throw error;
-    });
+    }
 }
 
 // Keep this method private since it relies on pre-validated arguments

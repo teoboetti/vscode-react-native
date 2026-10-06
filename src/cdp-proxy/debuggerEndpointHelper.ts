@@ -34,22 +34,26 @@ export class DebuggerEndpointHelper {
      */
     public async retryGetWSEndpoint(
         browserURL: string,
-        attemptNumber: number,
+        initialAttemptNumber: number,
         cancellationToken: CancellationToken,
         isHermes: boolean = false,
         settingsPort?: number,
     ): Promise<string> {
+        let attemptNumber = initialAttemptNumber;
         while (true) {
             try {
                 let url = "";
                 if (settingsPort) {
                     url = `http://localhost:${settingsPort}`;
                     try {
+                        // eslint-disable-next-line no-await-in-loop -- sequential retry loop
                         return await this.getWSEndpoint(browserURL, isHermes);
                     } catch {
+                        // eslint-disable-next-line no-await-in-loop -- sequential retry loop
                         return await this.getWSEndpoint(url, isHermes);
                     }
                 } else {
+                    // eslint-disable-next-line no-await-in-loop -- sequential retry loop
                     return await this.getWSEndpoint(browserURL, isHermes);
                 }
             } catch (err) {
@@ -71,6 +75,7 @@ export class DebuggerEndpointHelper {
                 }
 
                 attemptNumber--;
+                // eslint-disable-next-line no-await-in-loop -- delay between retry attempts
                 await PromiseUtil.delay(700);
             }
         }

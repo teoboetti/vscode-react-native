@@ -68,7 +68,7 @@ export class WebDebugSession extends DebugSessionBase {
                 logger.verbose(`Launching the application: ${JSON.stringify(launchArgs, null, 2)}`);
 
                 await this.updateWebpackMetroConfig(launchArgs);
-                await this.verifyExpoWebRequiredDependencies(launchArgs);
+                this.verifyExpoWebRequiredDependencies(launchArgs);
                 await this.appLauncher.launchExpoWeb(launchArgs);
                 await this.waitExpoWebIsRunning(launchArgs);
                 await this.appLauncher.launchBrowser(launchArgs);
@@ -89,7 +89,6 @@ export class WebDebugSession extends DebugSessionBase {
     protected async attachRequest(
         response: DebugProtocol.AttachResponse,
         attachArgs: IAttachRequestArgs,
-        request?: DebugProtocol.Request,
     ): Promise<void> {
         const doAttach = async (attachArgs: IAttachRequestArgs) => {
             try {
@@ -128,7 +127,7 @@ export class WebDebugSession extends DebugSessionBase {
                             }
                         },
                     );
-                    await this.establishDebugSession(processedAttachArgs);
+                    this.establishDebugSession(processedAttachArgs);
 
                     this.debugSessionStatus = DebugSessionStatus.ConnectionDone;
                 });
@@ -162,10 +161,7 @@ export class WebDebugSession extends DebugSessionBase {
         return super.disconnectRequest(response, args, request);
     }
 
-    protected establishDebugSession(
-        attachArgs: IAttachRequestArgs,
-        resolve?: (value?: void | PromiseLike<void> | undefined) => void,
-    ): void {
+    protected establishDebugSession(attachArgs: IAttachRequestArgs): void {
         if (this.cdpProxy) {
             const attachArguments = JsDebugConfigAdapter.createChromeDebuggingConfig(
                 attachArgs,

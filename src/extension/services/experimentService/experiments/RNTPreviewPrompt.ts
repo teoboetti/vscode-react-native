@@ -40,8 +40,9 @@ export default class RNTPreviewPrompt implements IExperiment {
 
     private showPrompIfThresholdIsNotExceeded(
         newExpConfig: ExperimentConfig,
-        promptParameters?: ExperimentParameters,
+        initialPromptParameters?: ExperimentParameters,
     ) {
+        let promptParameters = initialPromptParameters;
         if (promptParameters) {
             promptParameters.popCoveragePercent = newExpConfig.popCoveragePercent;
         } else {

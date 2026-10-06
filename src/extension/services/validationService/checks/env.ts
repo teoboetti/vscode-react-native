@@ -50,7 +50,7 @@ async function test(androidHomeVariableName: string = "ANDROID_HOME"): Promise<V
     }
 
     const valUsesEnv = Object.entries(resolvedEnv).find(
-        ([key, val]) => val.original !== val.resolved,
+        ([, val]) => val.original !== val.resolved,
     )?.[0];
 
     if (valUsesEnv) {

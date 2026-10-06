@@ -136,7 +136,8 @@ export class ForkedAppWorker implements IDebuggeeWorker {
         return port;
     }
 
-    public async postMessage(rnMessage: RNAppMessage): Promise<RNAppMessage> {
+    public async postMessage(rawMessage: RNAppMessage): Promise<RNAppMessage> {
+        let rnMessage = rawMessage;
         // Before sending messages, make sure that the worker is loaded
         await new Promise<void>(resolve => {
             if (this.workerLoaded) {

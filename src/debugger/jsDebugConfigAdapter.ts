@@ -30,7 +30,7 @@ export class JsDebugConfigAdapter {
         attachArgs: IAttachRequestArgs,
         cdpProxyPort: number,
         sessionId: string,
-    ) {
+    ): Promise<any> {
         const extraArgs: any = {};
         const versions = await ProjectVersionHelper.getReactNativeVersions(attachArgs.cwd);
         // Handle project file path from 0.76

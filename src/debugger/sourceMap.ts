@@ -103,7 +103,8 @@ export class SourceMapUtil {
         }
     }
 
-    public appendSourceMapPaths(scriptBody: string, sourceMappingUrl: string): string {
+    public appendSourceMapPaths(initialScriptBody: string, sourceMappingUrl: string): string {
+        let scriptBody = initialScriptBody;
         scriptBody += `//# sourceMappingURL=${sourceMappingUrl}`;
         return scriptBody;
     }
@@ -176,11 +177,14 @@ export class SourceMapUtil {
      * 2. It changes the path separators to Unix style.
      */
     private updateSourceMapPath(
-        sourcePath: string,
+        initialSourcePath: string,
         sourcesRootPath: string,
-        packagerRemoteRoot?: string,
-        packagerLocalRoot?: string,
+        initialPackagerRemoteRoot?: string,
+        initialPackagerLocalRoot?: string,
     ) {
+        let sourcePath = initialSourcePath;
+        let packagerRemoteRoot = initialPackagerRemoteRoot;
+        let packagerLocalRoot = initialPackagerLocalRoot;
         if (packagerRemoteRoot && packagerLocalRoot) {
             packagerRemoteRoot = this.makeUnixStylePath(packagerRemoteRoot);
             packagerLocalRoot = this.makeUnixStylePath(packagerLocalRoot);

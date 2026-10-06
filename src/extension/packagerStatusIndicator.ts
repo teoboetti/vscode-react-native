@@ -113,10 +113,11 @@ export class PackagerStatusIndicator implements Disposable {
     }
 
     private setupPackagerStatusIndicatorItems(
-        icon: string,
+        initialIcon: string,
         command?: string,
         tooltip: string = "",
     ): void {
+        let icon = initialIcon;
         this.updateDisplayVersion();
         this.togglePackagerItem.command = command;
         this.togglePackagerItem.tooltip = this.getTooltip(tooltip);

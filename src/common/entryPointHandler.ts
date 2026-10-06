@@ -76,14 +76,18 @@ export class EntryPointHandler {
     }
 
     private handleErrors(
-        error: InternalError,
+        internalError: InternalError,
         resultOfCode: Promise<void>,
         errorsAreFatal: boolean,
     ): Promise<void> {
         resultOfCode.catch(reason => {
             const isDebugeeProcess = this.processType === ProcessType.Debugee;
             const shouldLogStack = !errorsAreFatal || isDebugeeProcess;
-            this.logger.error(error.message, ErrorHelper.wrapError(error, reason), shouldLogStack);
+            this.logger.error(
+                internalError.message,
+                ErrorHelper.wrapError(internalError, reason),
+                shouldLogStack,
+            );
             // For the debugee process we don't want to throw an exception because the debugger
             // will appear to the user if he turned on the VS Code uncaught exceptions feature.
             if (errorsAreFatal) {

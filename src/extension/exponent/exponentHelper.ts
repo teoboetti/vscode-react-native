@@ -312,9 +312,10 @@ export class ExponentHelper {
             this.fs.exists(this.pathToFileInWorkspace(DEFAULT_IOS_INDEX)),
             this.fs.exists(this.pathToFileInWorkspace(DEFAULT_ANDROID_INDEX)),
         ]);
-        return expo
-            ? this.pathToFileInWorkspace(DEFAULT_EXPONENT_INDEX)
-            : ios
+        if (expo) {
+            return this.pathToFileInWorkspace(DEFAULT_EXPONENT_INDEX);
+        }
+        return ios
             ? this.pathToFileInWorkspace(DEFAULT_IOS_INDEX)
             : this.pathToFileInWorkspace(DEFAULT_ANDROID_INDEX);
     }

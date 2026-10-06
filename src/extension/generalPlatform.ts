@@ -214,7 +214,7 @@ export class GeneralPlatform {
         if (envFile) {
             // .env variables never overwrite existing variables
             const argsFromEnvFile = this.readEnvFile(envFile);
-            if (argsFromEnvFile != null) {
+            if (argsFromEnvFile !== null && argsFromEnvFile !== undefined) {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const key in argsFromEnvFile) {
                     if (argsFromEnvFile.hasOwnProperty(key) && !modifyEnv.hasOwnProperty(key)) {
@@ -247,7 +247,7 @@ export class GeneralPlatform {
             }
 
             buffer.split("\n").forEach((line: string) => {
-                const r = line.match(/^\s*([\w.\-]+)\s*=\s*(.*)?\s*$/);
+                const r = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
                 if (r !== null) {
                     const key = r[1];
                     let value = r[2] || "";
