@@ -175,6 +175,7 @@ export class PackageLoader {
                 const load = this.packagesQueue.length;
                 const packagesForInstall = this.packagesQueue.slice(0, load);
 
+                // eslint-disable-next-line no-await-in-loop -- packages are installed one npm command at a time
                 await commandExecutor.spawnWithProgress(
                     HostPlatform.getNpmCliCommand("npm"),
                     ["install", ...packagesForInstall, "--verbose", "--no-save", "--global-style"],
@@ -184,7 +185,8 @@ export class PackageLoader {
                 );
                 // Try to require all pending packages after every 'npm install ...' command
                 const requiresToRemove: ((load?: string[]) => Promise<boolean>)[] = [];
-                for (tryToRequire of this.requireQueue) {
+                for (const tryToRequire of this.requireQueue) {
+                    // eslint-disable-next-line no-await-in-loop -- iterates a live queue that may grow while awaiting
                     if (await tryToRequire(packagesForInstall)) {
                         requiresToRemove.push(tryToRequire);
                     }

@@ -79,7 +79,7 @@ export class DirectDebugSession extends DebugSessionBase {
 
         try {
             try {
-                if (launchArgs.platform != "exponent") {
+                if (launchArgs.platform !== "exponent") {
                     await ReactNativeProjectHelper.verifyMetroConfigFile(launchArgs.cwd);
                 }
                 await this.initializeSettings(launchArgs);
@@ -184,11 +184,12 @@ export class DirectDebugSession extends DebugSessionBase {
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             await TelemetryHelper.generate("attach", extProps, async generator => {
-                const port = attachArgs.useHermesEngine
-                    ? attachArgs.port || this.appLauncher.getPackagerPort(attachArgs.cwd)
-                    : attachArgs.platform === PlatformType.iOS
-                    ? attachArgs.port || IWDPHelper.iOS_WEBKIT_DEBUG_PROXY_DEFAULT_PORT
-                    : null;
+                let port: number | null = null;
+                if (attachArgs.useHermesEngine) {
+                    port = attachArgs.port || this.appLauncher.getPackagerPort(attachArgs.cwd);
+                } else if (attachArgs.platform === PlatformType.iOS) {
+                    port = attachArgs.port || IWDPHelper.iOS_WEBKIT_DEBUG_PROXY_DEFAULT_PORT;
+                }
                 if (port === null) {
                     throw ErrorHelper.getInternalError(
                         InternalErrorCode.CouldNotDirectDebugWithoutHermesEngine,
@@ -199,11 +200,12 @@ export class DirectDebugSession extends DebugSessionBase {
                 logger.log(`Connecting to ${attachArgs.port} port`);
                 await this.appLauncher.getRnCdpProxy().stopServer();
 
-                const cdpMessageHandler: BaseCDPMessageHandler | null = attachArgs.useHermesEngine
-                    ? new HermesCDPMessageHandler()
-                    : attachArgs.platform === PlatformType.iOS
-                    ? new IOSDirectCDPMessageHandler()
-                    : null;
+                let cdpMessageHandler: BaseCDPMessageHandler | null = null;
+                if (attachArgs.useHermesEngine) {
+                    cdpMessageHandler = new HermesCDPMessageHandler();
+                } else if (attachArgs.platform === PlatformType.iOS) {
+                    cdpMessageHandler = new IOSDirectCDPMessageHandler();
+                }
 
                 if (!cdpMessageHandler) {
                     throw ErrorHelper.getInternalError(
@@ -262,7 +264,7 @@ export class DirectDebugSession extends DebugSessionBase {
                 const debuggerType = await this.debuggerEndpointHelper.getDebuggerTpye(
                     `http://localhost:${attachArgs.port}`,
                 );
-                if (debuggerType == "expo") {
+                if (debuggerType === "expo") {
                     const expoBrowserInspectUri = `${browserInspectUri.split("&")[0]}&page=2`;
                     this.appLauncher.getRnCdpProxy().setBrowserInspectUri(expoBrowserInspectUri);
                 } else {
@@ -291,7 +293,7 @@ export class DirectDebugSession extends DebugSessionBase {
         this.debugSessionStatus = DebugSessionStatus.Stopping;
 
         // Stop packager when using expo-cli, to avoid launch conflicts in the next launch request
-        if (this.appLauncher.getPackager().getPlatform() == "exponent") {
+        if (this.appLauncher.getPackager().getPlatform() === "exponent") {
             await this.appLauncher.getPackager().stop();
         }
 

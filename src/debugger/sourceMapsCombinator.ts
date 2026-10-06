@@ -22,17 +22,14 @@ const DISK_LETTER_RE = /^(?:[a-z]{2,}:\/{3})?[a-z]:/i;
 export class SourceMapsCombinator {
     public convert(rawBundleSourcemap: RawSourceMap): RawSourceMap {
         // Find user files from bundle files list
-        const consumers: { [key: string]: SourceMapConsumer } = rawBundleSourcemap.sources.reduce(
-            (result: { [key: string]: SourceMapConsumer }, file) => {
-                // Skip files inside node_modules
-                if (file.includes("node_modules")) return result;
+        const consumers: { [key: string]: SourceMapConsumer } = {};
+        for (const file of rawBundleSourcemap.sources) {
+            // Skip files inside node_modules
+            if (file.includes("node_modules")) continue;
 
-                const consumer: SourceMapConsumer | null = this.getSourceMapConsumerFrom(file);
-                if (consumer) result[file] = consumer;
-                return result;
-            },
-            {},
-        );
+            const consumer: SourceMapConsumer | null = this.getSourceMapConsumerFrom(file);
+            if (consumer) consumers[file] = consumer;
+        }
 
         if (Object.keys(consumers).length === 0) {
             // Sourcemaps not found, so return original bundle sourcemap

@@ -78,7 +78,7 @@ export class RevertOpenModule extends ReactNativeCommand {
             const mainFilePath = path.resolve(openModulePath, "open-main.js");
             if (fs.existsSync(mainFilePath)) {
                 try {
-                    await fs.unlinkSync(mainFilePath);
+                    fs.unlinkSync(mainFilePath);
                 } catch {
                     logger.error(
                         localize("FailedToDeleteMainFile", "Failed to delete open-main.js file."),
@@ -95,10 +95,10 @@ export class RevertOpenModule extends ReactNativeCommand {
 
             const packageFilePath = path.resolve(openModulePath, "package.json");
             const packageJson = JSON.parse(fs.readFileSync(packageFilePath, "utf-8"));
-            if (packageJson.main == "open-main.js") {
+            if (packageJson.main === "open-main.js") {
                 try {
                     delete packageJson.main;
-                    await fs.writeFileSync(
+                    fs.writeFileSync(
                         packageFilePath,
                         JSON.stringify(<Record<string, any>>packageJson),
                     );

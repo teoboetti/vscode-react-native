@@ -7,7 +7,10 @@ import { SimctrlHelper } from "../extension/ios/simctl";
 import { OutputChannelLogger } from "../extension/log/OutputChannelLogger";
 import { ChildProcess } from "./node/childProcess";
 
-export async function installAndroidApplication(project: AppLauncher, appPath: string) {
+export async function installAndroidApplication(
+    project: AppLauncher,
+    appPath: string,
+): Promise<void> {
     const logger = OutputChannelLogger.getMainChannel();
     const adbHelper = new AdbHelper(
         project.getPackager().getProjectPath(),
@@ -15,7 +18,7 @@ export async function installAndroidApplication(project: AppLauncher, appPath: s
     );
 
     const targets = await adbHelper.getOnlineTargets();
-    if (targets.length == 0) {
+    if (targets.length === 0) {
         throw new Error("No online target found, please check your emulator status.");
     } else if (targets.length > 1) {
         logger.logStream(
@@ -37,7 +40,7 @@ export async function installAndroidApplication(project: AppLauncher, appPath: s
     }
 }
 
-export async function installiOSApplication(project: AppLauncher, appPath: string) {
+export async function installiOSApplication(project: AppLauncher, appPath: string): Promise<void> {
     const logger = OutputChannelLogger.getMainChannel();
     const childProcess: ChildProcess = new ChildProcess();
 
@@ -54,7 +57,7 @@ export async function installiOSApplication(project: AppLauncher, appPath: strin
         throw e;
     }
 
-    if (targets.length == 1) {
+    if (targets.length === 1) {
         throw new Error("No booted iOS simulator found, please check your simulator status.");
     } else if (targets.length > 2) {
         logger.logStream(

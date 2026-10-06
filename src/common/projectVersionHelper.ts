@@ -56,8 +56,9 @@ export class ProjectVersionHelper {
      */
     public static async getReactNativeRequiredNodeRange(
         projectRoot: string,
-        nodeModulesRoot?: string,
+        initialNodeModulesRoot?: string,
     ): Promise<string | null> {
+        let nodeModulesRoot = initialNodeModulesRoot;
         try {
             if (!nodeModulesRoot) {
                 nodeModulesRoot =
@@ -88,8 +89,9 @@ export class ProjectVersionHelper {
     public static async getReactNativeVersions(
         projectRoot: string,
         additionalPackagesToCheck?: ParsedPackage[],
-        nodeModulesRoot?: string,
+        initialNodeModulesRoot?: string,
     ): Promise<RNPackageVersions> {
+        let nodeModulesRoot = initialNodeModulesRoot;
         if (!nodeModulesRoot) {
             nodeModulesRoot =
                 ProjectsStorage.getFolderByProjectRootPath(
@@ -113,8 +115,9 @@ export class ProjectVersionHelper {
     public static async tryToGetRNSemverValidVersionsFromProjectPackage(
         projectRoot: string,
         additionalPackagesToCheck?: ParsedPackage[],
-        nodeModulesRoot?: string,
+        initialNodeModulesRoot?: string,
     ): Promise<RNPackageVersions> {
+        let nodeModulesRoot = initialNodeModulesRoot;
         const versions = await ProjectVersionHelper.getReactNativeVersionsFromProjectPackage(
             projectRoot,
             additionalPackagesToCheck,
@@ -186,11 +189,7 @@ export class ProjectVersionHelper {
         });
 
         const packageVersionArray = await Promise.all(versionPromises);
-        const packageVersions = packageVersionArray.reduce(
-            (allPackageVersions, packageVersion) =>
-                Object.assign(allPackageVersions, packageVersion),
-            {},
-        );
+        const packageVersions: PackageVersion = Object.assign({}, ...packageVersionArray);
         if (ProjectVersionHelper.isVersionError(packageVersions["react-native"])) {
             throw ErrorHelper.getInternalError(InternalErrorCode.ReactNativePackageIsNotInstalled);
         }

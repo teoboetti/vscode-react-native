@@ -71,6 +71,7 @@ export class CleanRestartPackager extends ReactNativeCommand {
                             if (match && match[1]) {
                                 const pid = match[1];
                                 logger.info(`Found Metro process with PID: ${pid}`);
+                                // eslint-disable-next-line no-await-in-loop -- kill PIDs one at a time; taskkill /T kills process trees, so later PIDs may already be gone
                                 await childProcess
                                     .exec(`taskkill /PID ${pid} /F /T`)
                                     .then(killResult => killResult.outcome);
@@ -143,6 +144,7 @@ export class CleanRestartPackager extends ReactNativeCommand {
                 const stat = fs.statSync(filePath);
 
                 if (stat.isDirectory()) {
+                    // eslint-disable-next-line no-await-in-loop -- entries are removed sequentially before rmdir
                     await this.deleteDirectory(filePath);
                 } else {
                     fs.unlinkSync(filePath);

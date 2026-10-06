@@ -4,7 +4,8 @@
 import { ILogger, LogLevel, LogHelper } from "./LogHelper";
 
 export class ConsoleLogger implements ILogger {
-    public log(message: string, level: LogLevel): void {
+    public log(initialMessage: string, level: LogLevel): void {
+        let message = initialMessage;
         if (LogHelper.LOG_LEVEL === LogLevel.None) {
             return;
         }

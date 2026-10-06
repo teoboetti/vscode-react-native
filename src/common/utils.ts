@@ -46,9 +46,9 @@ export function areSameDates(date1: Date, date2: Date): boolean {
     );
 }
 
-export function getRandomIntInclusive(min: number, max: number): number {
-    min = Math.ceil(min);
-    max = Math.floor(max);
+export function getRandomIntInclusive(initialMin: number, initialMax: number): number {
+    const min = Math.ceil(initialMin);
+    const max = Math.floor(initialMax);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
@@ -127,7 +127,7 @@ export function ipToBuffer(ip: string): Buffer {
     throw new Error("Invalid IP address format.");
 }
 
-export async function switchBundleOptions(projectRootPath: string, flag: boolean) {
+export async function switchBundleOptions(projectRootPath: string, flag: boolean): Promise<void> {
     const splitBundleOptionsPath = path.resolve(
         projectRootPath,
         "node_modules",

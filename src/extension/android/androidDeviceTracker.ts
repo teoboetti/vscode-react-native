@@ -44,6 +44,7 @@ export class AndroidDeviceTracker extends AbstractDeviceTracker {
                     onlineDevice.isVirtualTarget,
                     ClientOS.Android,
                 );
+                // eslint-disable-next-line no-await-in-loop -- adb reverse is set up per device sequentially; keeps fail-fast and insertion order
                 await this.initAndroidDevice(androidDevice);
                 DeviceStorage.devices.set(androidDevice.id, androidDevice);
             }

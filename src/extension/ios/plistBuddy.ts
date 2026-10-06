@@ -69,8 +69,9 @@ export class PlistBuddy {
         simulator: boolean = true,
         configuration: string = "Debug",
         productName?: string,
-        scheme?: string,
+        initialScheme?: string,
     ): Promise<IOSBuildLocationData> {
+        let scheme = initialScheme;
         const rnVersions = await ProjectVersionHelper.getReactNativeVersions(projectRoot);
         let productsFolder;
         if (
@@ -251,10 +252,11 @@ export class PlistBuddy {
 
         const nodeModulesRoot: string = AppLauncher.getNodeModulesRootByProjectPath(projectRoot);
 
+        const applePlatform = semver.gte(rnVersion, PlistBuddy.RN_VERSION_CLI_CONFIG_APPLE)
+            ? "cli-config-apple"
+            : "cli-platform-apple";
         const iOSCliPlatform = semver.gte(rnVersion, PlistBuddy.RN_VERSION_CLI_PLATFORM_APPLE)
-            ? semver.gte(rnVersion, PlistBuddy.RN_VERSION_CLI_CONFIG_APPLE)
-                ? "cli-config-apple"
-                : "cli-platform-apple"
+            ? applePlatform
             : "cli-platform-ios";
         const iOSCliFolderName =
             semver.gte(rnVersion, PlistBuddy.NEW_RN_IOS_CLI_LOCATION_VERSION) ||
@@ -270,7 +272,7 @@ export class PlistBuddy {
             fs.existsSync(pnpmProjectPath) && SettingsHelper.getPackageManager() === "pnpm";
         if (isPnpmProject) {
             const modules = fs.readdirSync(pnpmProjectPath);
-            const regex = new RegExp(`\@react-native-community\\+${iOSCliFolderName}@`);
+            const regex = new RegExp(`@react-native-community\\+${iOSCliFolderName}@`);
             const communityModule = modules.find(module => regex.test(module));
             if (communityModule) {
                 findXcodeBase = path.join(

@@ -112,7 +112,10 @@ export async function selectProject(): Promise<AppLauncher> {
     return ProjectsStorage.projectsCache[selected];
 }
 
-export async function sendMessageToMetro(method: "devMenu" | "reload", project: AppLauncher) {
+export async function sendMessageToMetro(
+    method: "devMenu" | "reload",
+    project: AppLauncher,
+): Promise<void> {
     const port = SettingsHelper.getPackagerPort(project.getWorkspaceFolderUri().fsPath);
     const ws = new WebSocket(`ws://localhost:${port}/message`);
     await new Promise(resolve => {

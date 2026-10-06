@@ -114,6 +114,7 @@ export class ExperimentService implements vscode.Disposable {
         if (this.downloadedExperimentsConfig) {
             for (const expConfig of this.downloadedExperimentsConfig) {
                 try {
+                    // eslint-disable-next-line no-await-in-loop -- experiments are loaded in config order
                     const expClass = await import(`./experiments/${expConfig.experimentName}`);
                     expInstances.set(expConfig.experimentName, new expClass.default());
                 } catch (err) {

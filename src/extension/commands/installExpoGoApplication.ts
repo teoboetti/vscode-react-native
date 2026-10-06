@@ -46,7 +46,7 @@ export class InstallExpoGoApplication extends Command {
             const currentSdkVersion = await expoHelper.exponentSdk(true);
             const expoUrlInfo = jsonContent.sdkVersions[currentSdkVersion];
 
-            if (item == "Android") {
+            if (item === "Android") {
                 void vscode.window.showInformationMessage("Downloading Expo Go for Android.");
                 logger.logStream(
                     localize("DownloadAndroidExpoGo", "\nDownloading Expo Go for Android. \n"),
@@ -70,7 +70,7 @@ export class InstallExpoGoApplication extends Command {
                     }
                 }
 
-                if (installItem == "Auto") {
+                if (installItem === "Auto") {
                     try {
                         await installAndroidApplication(this.project, fileName);
                     } catch {
@@ -86,8 +86,8 @@ export class InstallExpoGoApplication extends Command {
                         ),
                     );
                 }
-            } else if (item == "iOS") {
-                if (os.platform() != "darwin") {
+            } else if (item === "iOS") {
+                if (os.platform() !== "darwin") {
                     logger.warning(
                         localize(
                             "NotDarwinPlatform",
@@ -122,7 +122,7 @@ export class InstallExpoGoApplication extends Command {
                     }
                 }
 
-                if (installItem == "Auto" && os.platform() == "darwin") {
+                if (installItem === "Auto" && os.platform() === "darwin") {
                     try {
                         await installiOSApplication(this.project, tarFile);
                     } catch {

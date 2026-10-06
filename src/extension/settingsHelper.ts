@@ -229,7 +229,7 @@ export class SettingsHelper {
         return [];
     }
 
-    public static getWorkspaceTelemetry(fsPath: string) {
+    public static getWorkspaceTelemetry(fsPath: string): any {
         if (!fsPath || !fs.existsSync(fsPath)) {
             return "";
         }

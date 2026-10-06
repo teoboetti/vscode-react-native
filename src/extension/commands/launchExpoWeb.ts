@@ -20,7 +20,7 @@ export class launchExpoWeb extends Command {
     label = "Launch ExpoWeb";
     error = ErrorHelper.getInternalError(InternalErrorCode.FailedToLaunchExpoWeb);
 
-    async baseFn(launchArgs: any): Promise<any> {
+    async baseFn(): Promise<any> {
         assert(this.project);
         const expoHelper = this.project.getExponentHelper();
         logger.info(localize("CheckExpoEnvironment", "Checking Expo project environment."));

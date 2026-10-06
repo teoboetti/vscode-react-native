@@ -112,11 +112,7 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
                     input.items = items;
                     input.matchOnDescription = matchOnDescription || false;
                     input.matchOnDetail = matchOnDetail || false;
-                    if (activeItem) {
-                        input.activeItems = [activeItem];
-                    } else {
-                        input.activeItems = [];
-                    }
+                    input.activeItems = activeItem ? [activeItem] : [];
                     input.buttons = [
                         ...(this.steps.length > 1 ? [QuickInputButtons.Back] : []),
                         ...(buttons || []),
@@ -242,6 +238,7 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
                 this.current.busy = true;
             }
             try {
+                // eslint-disable-next-line no-await-in-loop -- each step depends on the previous step's result
                 step = await step(this, state);
             } catch (err) {
                 if (err === InputFlowAction.back) {

@@ -215,7 +215,7 @@ export abstract class DebugSessionBase extends LoggingDebugSession {
                 );
             }
             const settingsPort = this.appLauncher.getPackagerPort(projectRootPath);
-            if (this.appLauncher.getPackager().getPort() != settingsPort) {
+            if (this.appLauncher.getPackager().getPort() !== settingsPort) {
                 this.appLauncher.getPackager().resetToSettingsPort();
             }
         }

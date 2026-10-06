@@ -119,6 +119,7 @@ export class AndroidTargetManager extends MobileTargetManager {
         const onlineTargets = await this.adbHelper.getOnlineTargets();
         for (const device of onlineTargets) {
             if (device.isVirtualTarget && collectSimulators) {
+                // eslint-disable-next-line no-await-in-loop -- adb is queried per device sequentially
                 const avdName = await this.adbHelper.getAvdNameById(device.id);
                 const emulatorTarget = targetList.find(target => target.name === avdName);
                 if (emulatorTarget) {
@@ -153,7 +154,7 @@ export class AndroidTargetManager extends MobileTargetManager {
             emulatorProcess.outcome.catch(error => {
                 emulatorLaunchFailed = true;
                 if (
-                    process.platform == "win32" &&
+                    process.platform === "win32" &&
                     process.env.SESSIONNAME &&
                     process.env.SESSIONNAME.toLowerCase().includes("rdp-tcp")
                 ) {
@@ -175,6 +176,7 @@ export class AndroidTargetManager extends MobileTargetManager {
                     throw new Error("Android emulator launch failed unexpectedly");
                 const connectedDevices = await this.adbHelper.getOnlineTargets();
                 for (const target of connectedDevices) {
+                    // eslint-disable-next-line no-await-in-loop -- polling condition, returns on first match
                     const onlineAvdName = await this.adbHelper.getAvdNameById(target.id);
                     if (onlineAvdName === emulatorTarget.name) {
                         return target.id;

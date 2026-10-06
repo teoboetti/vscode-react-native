@@ -279,7 +279,7 @@ export class AdbHelper {
         const result: IDebuggableMobileTarget[] = [];
         const regex = new RegExp("^(\\S+)\\t(\\S+)$", "mg");
         let match = regex.exec(input);
-        while (match != null) {
+        while (match !== null) {
             result.push({
                 id: match[1],
                 isOnline: match[2] === "device",

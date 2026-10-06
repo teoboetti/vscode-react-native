@@ -58,12 +58,7 @@ export class ChildProcess {
                 process = this.childProcess.exec(
                     command,
                     options,
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    (
-                        error: nodeChildProcess.ExecException | null,
-                        stdout: string | Buffer,
-                        stderr: string | Buffer,
-                    ) => {
+                    (error: nodeChildProcess.ExecException | null, stdout: string | Buffer) => {
                         if (error) {
                             reject(
                                 ErrorHelper.getNestedError(
@@ -98,11 +93,7 @@ export class ChildProcess {
                 command,
                 args,
                 options,
-                (
-                    error: nodeChildProcess.ExecException | null,
-                    stdout: string | Buffer,
-                    stderr: string | Buffer,
-                ) => {
+                (error: nodeChildProcess.ExecException | null, stdout: string | Buffer) => {
                     if (error) {
                         reject(
                             ErrorHelper.getNestedError(

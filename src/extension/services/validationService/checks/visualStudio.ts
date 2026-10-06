@@ -15,12 +15,9 @@ const toLocale = nls.loadMessageBundle();
 const label = "Compilers, build tools, SDKs and Visual Studio";
 
 async function test(): Promise<ValidationResultT> {
-    let vswherePath = ``;
-    if (process.env["ProgramFiles(x86)"]) {
-        vswherePath = `"${process.env["ProgramFiles(x86)"]}\\Microsoft Visual Studio\\Installer\\vswhere.exe"`;
-    } else {
-        vswherePath = `"C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe"`;
-    }
+    const vswherePath = process.env["ProgramFiles(x86)"]
+        ? `"${process.env["ProgramFiles(x86)"]}\\Microsoft Visual Studio\\Installer\\vswhere.exe"`
+        : `"C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe"`;
     const components = [
         "Microsoft.Component.MSBuild",
         "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
@@ -35,6 +32,7 @@ async function test(): Promise<ValidationResultT> {
         const valid = (version: string) => semver.gtr(version, "16.5");
         if (versions.some(valid)) {
             for (const comp of components) {
+                // eslint-disable-next-line no-await-in-loop -- returns early on the first missing component
                 const pathToComponent = await executeCommand(
                     `${vswherePath}  -requires ${comp}  -property productPath`,
                 );

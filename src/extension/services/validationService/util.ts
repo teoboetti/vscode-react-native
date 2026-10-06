@@ -47,11 +47,8 @@ export const basicCheck = async (arg: {
         return result;
     }
 
-    result.versionCompare = semver.gtr(version, arg.versionRange)
-        ? 1
-        : semver.ltr(version, arg.versionRange)
-        ? -1
-        : 0;
+    const lowerCompare = semver.ltr(version, arg.versionRange) ? -1 : 0;
+    result.versionCompare = semver.gtr(version, arg.versionRange) ? 1 : lowerCompare;
 
     return result;
 };
@@ -73,10 +70,12 @@ export const parseVersion = async (
 // change typescript lib to es2019 ?
 export const fromEntries = <T = any, J extends PropertyKey = PropertyKey>(
     entries: Iterable<readonly [J, T]>,
-): Record<J, T> =>
-    [...entries].reduce((obj, [key, val]) => {
+): Record<J, T> => {
+    const obj = {} as Record<J, T>;
+    for (const [key, val] of entries) {
         obj[key] = val;
-        return obj;
-    }, {} as Record<J, T>);
+    }
+    return obj;
+};
 
 // export const flatten = (ary: any[]): unknown[] =>
