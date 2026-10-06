@@ -201,13 +201,22 @@ export class AndroidPlatform extends GeneralMobilePlatform {
                 target => target.id,
             );
             let targetId: string | undefined;
+            let runError: unknown;
             try {
                 try {
                     await output;
+                } catch (error) {
+                    runError = error;
+                    throw error;
                 } finally {
-                    targetId = await this.getTargetIdForRunApp(onlineTargetsIds);
+                    targetId = await this.getTargetIdForRunApp(onlineTargetsIds).catch(error => {
+                        if (runError && onlineTargetsIds.length) {
+                            return undefined;
+                        }
+                        throw error;
+                    });
                     this.packageName = await this.getPackageName();
-                    devicesIdsForLaunch = [targetId];
+                    devicesIdsForLaunch = targetId ? [targetId] : [];
 
                     // Save target info for status indicator
                     if (targetId) {
@@ -244,9 +253,6 @@ export class AndroidPlatform extends GeneralMobilePlatform {
                     }
                 }
             } catch (error) {
-                if (!targetId) {
-                    targetId = await this.getTargetIdForRunApp(onlineTargetsIds);
-                }
                 if (
                     (error as Error).message ===
                         ErrorHelper.getInternalError(
@@ -343,14 +349,19 @@ export class AndroidPlatform extends GeneralMobilePlatform {
                 "--deviceId",
             );
         }
-        return deviceId
-            ? deviceId
-            : this.runOptions.target &&
-              this.runOptions.target !== TargetType.Simulator &&
-              this.runOptions.target !== TargetType.Device &&
-              onlineTargetsIds.find(id => id === this.runOptions.target)
-            ? this.runOptions.target
-            : (await this.getTarget()).id;
+        if (deviceId) {
+            return deviceId;
+        }
+        const { target } = this.runOptions;
+        if (
+            target &&
+            target !== TargetType.Simulator &&
+            target !== TargetType.Device &&
+            onlineTargetsIds.includes(target)
+        ) {
+            return target;
+        }
+        return (await this.getTarget()).id;
     }
 
     private getAppIdSuffixFromRunArgumentsIfExists(): string | undefined {

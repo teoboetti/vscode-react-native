@@ -28,7 +28,7 @@ const generateSrcLocBundle = () => {
     return runTypeScriptCompile().then(() =>
         streamToPromise(
             gulp
-                .src(["src/**/*.js"], { base: ".", allowEmpty: true })
+                .src(["src/**/*.js"], { base: appRoot, allowEmpty: true })
                 .pipe(nls.createMetaDataFiles())
                 .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
                 .pipe(nls.bundleMetaDataFiles(fullExtensionName, "dist"))
@@ -81,7 +81,7 @@ async function build(failOnError, buildNls) {
     await runTypeScriptCompile();
 
     const stream = gulp
-        .src(["src/**/*.js", "test/**/*.js"], { base: ".", allowEmpty: true })
+        .src(["src/**/*.js", "test/**/*.js"], { base: appRoot, allowEmpty: true })
         .pipe(createLinePreservingPreprocessor(preprocessorContext))
         .pipe(buildNls ? nls.rewriteLocalizeCalls() : es.through())
         .pipe(

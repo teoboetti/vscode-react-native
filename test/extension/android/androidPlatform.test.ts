@@ -261,6 +261,28 @@ suite("androidPlatform", function () {
         );
 
         testWithRecordings(
+            "runApp reports the run-android failure when the only online device goes offline during the run",
+            ["react-native/run-android/win10-rn0.21.0/failsDueToNoDevicesConnected"],
+            async () => {
+                devices = fillDevices(["Nexus_5"]);
+                getOnlineTargetsStub.restore();
+                let onlineTargetsRequests = 0;
+                getOnlineTargetsStub = sinon.stub(adbHelper, "getOnlineTargets", async () =>
+                    onlineTargetsRequests++ === 0 ? devices : [],
+                );
+
+                try {
+                    await androidPlatform.runApp();
+                    should.assert(false, "runApp should've exited with an error");
+                } catch (error) {
+                    (error as Error).message
+                        .startsWith("Unknown error: not all success patterns were matched")
+                        .should.be.true();
+                }
+            },
+        );
+
+        testWithRecordings(
             "runApp launches the app in an online emulator only",
             ["react-native/run-android/win10-rn0.21.0/succeedsWithFiveVSEmulators"],
             async () => {
