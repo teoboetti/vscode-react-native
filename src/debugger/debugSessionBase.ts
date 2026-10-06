@@ -229,6 +229,9 @@ export abstract class DebugSessionBase extends LoggingDebugSession {
     ): Promise<void> {
         if (this.appLauncher) {
             await this.appLauncher.getRnCdpProxy().stopServer();
+            if (args.terminateDebuggee && !args.restart) {
+                await this.appLauncher.getPackager().stop(true);
+            }
         }
 
         DeviceStatusIndicator.hide();
