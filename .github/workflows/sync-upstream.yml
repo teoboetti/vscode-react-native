@@ -1,0 +1,66 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      # PAT (repo + workflow scopes): GITHUB_TOKEN can't push upstream workflow changes and its PRs don't trigger CI
+      GH_TOKEN: ${{ secrets.SYNC_PAT }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SYNC_PAT }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Merge upstream
+        id: merge
+        run: |
+          # an open sync PR may hold manual fixes; don't overwrite it
+          gh pr list --head upstream-sync --state open --json number -q '.[].number' | grep -q . && exit 0
+          git config user.name "upstream-sync"
+          git config user.email "upstream-sync@users.noreply.github.com"
+          git fetch https://github.com/microsoft/vscode-react-native.git master
+          [ "$(git rev-list --count HEAD..FETCH_HEAD)" = 0 ] && exit 0
+          git checkout -b upstream-sync
+          if git merge --no-edit FETCH_HEAD; then
+            echo "result=clean" >> "$GITHUB_OUTPUT"
+          else
+            echo "files=$(git diff --name-only --diff-filter=U | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+            echo "result=conflict" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve conflicts with Claude
+        if: steps.merge.outputs.result == 'conflict'
+        timeout-minutes: 30 # hard cap; the default is 6 hours
+        run: npx -y @anthropic-ai/claude-code -p "$PROMPT" --allowedTools "Bash,Read,Edit,Write" --max-turns 40 --model sonnet
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }} # from `claude setup-token`
+          PROMPT: |
+            A merge of microsoft/vscode-react-native master into this fork stopped on conflicts in:
+            ${{ steps.merge.outputs.files }}
+            Resolve them: take upstream's changes but keep this fork's patches (see `git log` for fork-only commits).
+            Then run `npm ci`, `npm run lint`, `npx gulp prod-build` and `npm run build`, and fix anything the merge broke.
+            Finish with `git add -A` and `git commit --no-edit`. Do not push.
+
+      - name: Open PR
+        if: steps.merge.outputs.result != ''
+        run: |
+          if git grep -n '^<<<<<<< '; then exit 1; fi # leftover conflict markers: fail, no PR
+          git push -f origin upstream-sync
+          gh pr create --head upstream-sync --base master \
+            --title "Sync upstream $(date +%F)" \
+            --body "Weekly upstream merge. Files resolved by Claude: ${{ steps.merge.outputs.files || 'none' }}"
