@@ -27,6 +27,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Bundle extension
+        run: npx gulp prod-build
+
       - name: Build
         run: npm run build
 
