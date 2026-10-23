@@ -80,11 +80,11 @@ export class EnableHermes extends Command {
 
             const gradleFileContent = fs.readFileSync(gradleFilePath, "utf-8");
             const hermesMatches = gradleFileContent.match(
-                /^([ \t]*)(#\s*)?hermesEnabled\s*=\s*\w*/m,
+                /^([\t ]*)(#\s*)?hermesEnabled\s*=\s*\w*/m,
             );
             if (hermesMatches && !hermesMatches[2]) {
                 const updatedHermes = gradleFileContent.replace(
-                    /^([ \t]*)hermesEnabled\s*=\s*\w*/m,
+                    /^([\t ]*)hermesEnabled\s*=\s*\w*/m,
                     `$1hermesEnabled=${isHermesEnabled}`,
                 );
                 await this.nodeFileSystem.writeFile(gradleFilePath, updatedHermes);
