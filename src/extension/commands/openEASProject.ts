@@ -33,7 +33,7 @@ export class OpenEASProject extends ReactNativeCommand {
                 const id = await expoHelper.getExpoEasProjectId();
                 const owner = await expoHelper.getExpoEasProjectOwner();
                 const slug = await expoHelper.getExpoEasProjectSlug();
-                if (id == null || owner == null) {
+                if (id === null || id === undefined || owner === null || owner === undefined) {
                     const error = localize(
                         "ExpoProjectNotLinkToEAS",
                         "Your app not link to EAS project. Please run 'eas init' firstly to bind your app to EAS project.",
